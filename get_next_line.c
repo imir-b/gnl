@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/20 19:26:46 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/21 02:31:41 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ char	*ft_strndup(char *src, size_t n)
 	if (!dest)
 		return (NULL);
 	i = 0;
-	while (i <= len)
+	dest[i] = 0;
+	while (i < len)
 	{
 		dest[i] = src[i];
 		i++;
@@ -72,6 +73,7 @@ char	*ft_strdup(char *src)
 	if (!dest)
 		return (NULL);
 	i = 0;
+	dest[i] = '\0';
 	while (dest[i])
 	{
 		dest[i] = src[i];
@@ -104,8 +106,7 @@ char	*ft_realloc(char *s1, char *s2)
 		i++;
 	}
 	dest[i] = '\0';
-	free(s1);
-	return (dest);
+	return (free(s1), free(s2), dest);
 }
 
 char	*ft_read_line(int fd, int buf_size)
@@ -114,19 +115,21 @@ char	*ft_read_line(int fd, int buf_size)
 	char		*readed;
 	ssize_t		bytes;
 
-	buffer = malloc(sizeof(char) * (buf_size + 1));
 	readed = malloc(1);
-	if (!buffer || !readed)
+	if (!readed)
 		return (NULL);
 	readed[0] = '\0';
 	while (ft_strchr(readed, '\n') == NULL || readed[0] == '\0')
 	{
+		buffer = malloc(sizeof(char) * (buf_size + 1));
+		if (!buffer)
+			return (free(readed), NULL);
 		bytes = read(fd, buffer, buf_size);
 		if (bytes < 0)
 			return (free(buffer), free(readed), NULL);
 		readed = ft_realloc(readed, buffer);
 	}
-	return (free(buffer), readed);
+	return (readed);
 }
 
 char	*get_next_line(int fd)
@@ -137,12 +140,16 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
+	readed = malloc(1);
+	if (!readed)
+		return (NULL);
+	readed[0] = '\0';
 	if (stash[fd])
 	{
-		readed = ft_strdup(stash[fd]);
+		readed = ft_realloc(readed, ft_strdup(stash[fd]));
 		free(stash[fd]);
 	}
-	readed = ft_read_line(fd, BUFFER_SIZE);
+	readed = ft_realloc(readed, ft_read_line(fd, BUFFER_SIZE));
 	line = ft_strndup(readed, ft_strchr(readed, '\n') - readed);
 	stash[fd] = ft_strdup(ft_strchr(readed, '\n'));
 	return (free(readed), line);
