@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/21 02:31:41 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/21 04:38:04 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,8 @@ char	*ft_realloc(char *s1, char *s2)
 	}
 	while (s2[j])
 	{
-		dest[i] = s2[i + j];
-		i++;
+		dest[i + j] = s2[j];
+		j++;
 	}
 	dest[i] = '\0';
 	return (free(s1), free(s2), dest);
@@ -127,6 +127,12 @@ char	*ft_read_line(int fd, int buf_size)
 		bytes = read(fd, buffer, buf_size);
 		if (bytes < 0)
 			return (free(buffer), free(readed), NULL);
+		if (bytes == 0)
+		{
+			free (buffer);
+			break ;
+		}
+		buffer[bytes] = '\0';
 		readed = ft_realloc(readed, buffer);
 	}
 	return (readed);
@@ -149,7 +155,8 @@ char	*get_next_line(int fd)
 		readed = ft_realloc(readed, ft_strdup(stash[fd]));
 		free(stash[fd]);
 	}
-	readed = ft_realloc(readed, ft_read_line(fd, BUFFER_SIZE));
+	if (!ft_strchr(readed, '\n'))
+		readed = ft_realloc(readed, ft_read_line(fd, BUFFER_SIZE));
 	line = ft_strndup(readed, ft_strchr(readed, '\n') - readed);
 	stash[fd] = ft_strdup(ft_strchr(readed, '\n'));
 	return (free(readed), line);
@@ -159,16 +166,10 @@ int	main(void)
 {
 	char	*line;
 
-	line = get_next_line(0);
-	printf("%s", line);
-	line = get_next_line(0);
-	printf("%s", line);
-	line = get_next_line(0);
-	printf("%s", line);
-	line = get_next_line(0);
-	printf("%s", line);
-	line = get_next_line(0);
-	printf("%s", line);
-	free(line);
+	while ((line = get_next_line(0)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
 	return (0);
 }
