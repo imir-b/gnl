@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/21 04:38:04 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/21 13:51:38 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ char	*ft_realloc(char *s1, char *s2)
 		dest[i + j] = s2[j];
 		j++;
 	}
-	dest[i] = '\0';
+	dest[i + j] = '\0';
 	return (free(s1), free(s2), dest);
 }
 
@@ -143,6 +143,7 @@ char	*get_next_line(int fd)
 	char		*readed;
 	static char	*stash[1024];
 	char		*line;
+	char		*newline;
 
 	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -154,11 +155,20 @@ char	*get_next_line(int fd)
 	{
 		readed = ft_realloc(readed, ft_strdup(stash[fd]));
 		free(stash[fd]);
+		stash[fd] = NULL;
 	}
 	if (!ft_strchr(readed, '\n'))
 		readed = ft_realloc(readed, ft_read_line(fd, BUFFER_SIZE));
-	line = ft_strndup(readed, ft_strchr(readed, '\n') - readed);
-	stash[fd] = ft_strdup(ft_strchr(readed, '\n'));
+	if (readed[0] == '\0')
+		return (free(readed), NULL);
+	newline = ft_strchr(readed, '\n');
+	if (newline)
+	{
+		line = ft_strndup(readed, newline - readed + 1);
+		stash[fd] = ft_strdup(newline + 1);
+	}
+	else
+		line = ft_strdup(readed);
 	return (free(readed), line);
 }
 
