@@ -36,8 +36,6 @@ char	*ft_strchr(const char *s, int c)
 	}
 	if (*s == (char)c)
 		return ((char *)s);
-	if (*s == '\0')
-		return ((char *)s);
 	return (NULL);
 }
 
@@ -56,25 +54,6 @@ char	*ft_strndup(char *src, size_t n)
 	i = 0;
 	dest[i] = 0;
 	while (i < len)
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-char	*ft_strdup(char *src)
-{
-	char	*dest;
-	int		i;
-
-	dest = malloc(ft_strlen(src) + 1);
-	if (!dest)
-		return (NULL);
-	i = 0;
-	dest[i] = '\0';
-	while (dest[i])
 	{
 		dest[i] = src[i];
 		i++;
@@ -109,67 +88,80 @@ char	*ft_realloc(char *s1, char *s2)
 	return (free(s1), free(s2), dest);
 }
 
-char	*ft_read_line(int fd, int buf_size)
+char	*ft_add_to_stash(int fd, char *stash, int *end)
 {
 	char		*buffer;
 	char		*readed;
 	ssize_t		bytes;
 
-	readed = malloc(1);
-	if (!readed)
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
 		return (NULL);
-	readed[0] = '\0';
-	while (ft_strchr(readed, '\n') == NULL || readed[0] == '\0')
+	bytes = read(fd, buffer, BUFFER_SIZE);
+	if (bytes == 0)
 	{
-		buffer = malloc(sizeof(char) * (buf_size + 1));
-		if (!buffer)
-			return (free(readed), NULL);
-		bytes = read(fd, buffer, buf_size);
-		if (bytes < 0)
-			return (free(buffer), free(readed), NULL);
-		if (bytes == 0)
-		{
-			free (buffer);
-			break ;
-		}
-		buffer[bytes] = '\0';
-		readed = ft_realloc(readed, buffer);
+		*end = 1;
+		return (free(buffer), stash);
 	}
+	if (bytes < 0)
+		return (free(buffer), NULL);
+	buffer[bytes] = '\0';
+	readed = ft_realloc(stash, buffer);
 	return (readed);
+}
+
+char	*ft_clean_stash(char **stash)
+{
+	char	*new_stash;
+	char	*newline;
+	int		i;
+
+	newline = ft_strchr(*stash, '\n');
+	newline++;
+	new_stash = malloc(ft_strlen(newline) + 1);
+	if (!new_stash)
+		return (NULL);
+	i = 0;
+	new_stash[i] = '\0';
+	while (newline[i])
+	{
+		new_stash[i] = newline[i];
+		i++;
+	}
+	new_stash[i] = '\0';
+	free (*stash);
+	return (new_stash);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*readed;
-	static char	*stash[1024];
+	static char	*stash;
 	char		*line;
 	char		*newline;
+	int			end;
 
+	end = 0;
 	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
-	readed = malloc(1);
-	if (!readed)
-		return (NULL);
-	readed[0] = '\0';
-	if (stash[fd])
-	{
-		readed = ft_realloc(readed, ft_strdup(stash[fd]));
-		free(stash[fd]);
-		stash[fd] = NULL;
-	}
-	if (!ft_strchr(readed, '\n'))
-		readed = ft_realloc(readed, ft_read_line(fd, BUFFER_SIZE));
-	if (readed[0] == '\0')
-		return (free(readed), NULL);
-	newline = ft_strchr(readed, '\n');
+	if (!stash)
+		stash = ft_add_to_stash(fd, stash, &end);
+	while (stash && !ft_strchr(stash, '\n') && !end)
+		stash = ft_add_to_stash(fd, stash, &end);
+	if (!stash)
+		return (free(stash), NULL);
+	newline = ft_strchr(stash, '\n');
 	if (newline)
 	{
-		line = ft_strndup(readed, newline - readed + 1);
-		stash[fd] = ft_strdup(newline + 1);
+		line = ft_strndup(stash, newline - stash + 1);
+		stash = ft_clean_stash(&stash);
+		return (line);
 	}
 	else
-		line = ft_strdup(readed);
-	return (free(readed), line);
+	{
+		line = stash;
+		stash = NULL;
+		return (line);
+	}
 }
 
 int	main(void)
