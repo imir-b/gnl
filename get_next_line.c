@@ -6,87 +6,13 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/21 13:51:38 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/23 18:53:36 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#define BUFFER_SIZE 10
-
-int	ft_strlen(const char *str)
-{
-	int	len;
-
-	len = 0;
-	while (str[len])
-		len++;
-	return (len);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	while (*s)
-	{
-		if (*s == (char)c)
-			return ((char *)s);
-		s++;
-	}
-	if (*s == (char)c)
-		return ((char *)s);
-	return (NULL);
-}
-
-char	*ft_strndup(char *src, size_t n)
-{
-	char	*dest;
-	size_t	i;
-	size_t	len;
-
-	len = 0;
-	while (src[len] && len < n)
-		len++;
-	dest = malloc(len + 1);
-	if (!dest)
-		return (NULL);
-	i = 0;
-	dest[i] = 0;
-	while (i < len)
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-char	*ft_realloc(char *s1, char *s2)
-{
-	char	*dest;
-	int		i;
-	int		j;
-
-	if (!s1)
-		return (free(s1), s2);
-	dest = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!dest)
-		return (NULL);
-	i = ((j = 0));
-	while (s1[i])
-	{
-		dest[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		dest[i + j] = s2[j];
-		j++;
-	}
-	dest[i + j] = '\0';
-	return (free(s1), free(s2), dest);
-}
+// #include <stdio.h>
+// #define BUFFER_SIZE 10
+#include "get_next_line.h"
 
 char	*ft_add_to_stash(int fd, char *stash, int *end)
 {
@@ -104,7 +30,12 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 		return (free(buffer), stash);
 	}
 	if (bytes < 0)
+	{
+		if (stash)
+			free(stash);
+		*end = 1;
 		return (free(buffer), NULL);
+	}
 	buffer[bytes] = '\0';
 	readed = ft_realloc(stash, buffer);
 	return (readed);
@@ -113,19 +44,19 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 char	*ft_clean_stash(char **stash)
 {
 	char	*new_stash;
-	char	*newline;
+	char	*nl;
 	int		i;
 
-	newline = ft_strchr(*stash, '\n');
-	newline++;
-	new_stash = malloc(ft_strlen(newline) + 1);
+	nl = ft_strchr(*stash, '\n');
+	nl++;
+	new_stash = malloc(ft_strlen(nl) + 1);
 	if (!new_stash)
 		return (NULL);
 	i = 0;
 	new_stash[i] = '\0';
-	while (newline[i])
+	while (nl[i])
 	{
-		new_stash[i] = newline[i];
+		new_stash[i] = nl[i];
 		i++;
 	}
 	new_stash[i] = '\0';
@@ -135,43 +66,38 @@ char	*ft_clean_stash(char **stash)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash[1024];
 	char		*line;
-	char		*newline;
+	char		*nl;
 	int			end;
 
 	end = 0;
-	if (fd < 0 || fd > 1024 || BUFFER_SIZE <= 0)
+	if (fd < 0 || fd >= 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!stash)
-		stash = ft_add_to_stash(fd, stash, &end);
-	while (stash && !ft_strchr(stash, '\n') && !end)
-		stash = ft_add_to_stash(fd, stash, &end);
-	if (!stash)
-		return (free(stash), NULL);
-	newline = ft_strchr(stash, '\n');
-	if (newline)
+	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
+		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
+	if (!stash[fd])
+		return (free(stash[fd]), NULL);
+	nl = ft_strchr(stash[fd], '\n');
+	if (nl)
 	{
-		line = ft_strndup(stash, newline - stash + 1);
-		stash = ft_clean_stash(&stash);
+		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
+		stash[fd] = ft_clean_stash(&stash[fd]);
 		return (line);
 	}
-	else
-	{
-		line = stash;
-		stash = NULL;
-		return (line);
-	}
+	line = stash[fd];
+	stash[fd] = NULL;
+	return (line);
 }
 
-int	main(void)
-{
-	char	*line;
+// int	main(void)
+// {
+// 	char	*line;
 
-	while ((line = get_next_line(0)) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-	}
-	return (0);
-}
+// 	while ((line = get_next_line(0)) != NULL)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+// 	return (0);
+// }
