@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/24 02:58:47 by vbleskin         ###   ########.fr       */
+/*   Created: 2025/11/24 02:53:59 by vbleskin          #+#    #+#             */
+/*   Updated: 2025/11/24 02:55:12 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <stdio.h>
-// #define BUFFER_SIZE 42
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_add_to_stash(int fd, char *stash, int *end)
 {
@@ -67,7 +65,7 @@ char	*ft_clean_stash(char **stash)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash[1024];
 	char		*line;
 	char		*nl;
 	int			end;
@@ -75,30 +73,18 @@ char	*get_next_line(int fd)
 	end = 0;
 	if (fd < 0 || fd >= 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (!end && (!stash || !ft_strchr(stash, '\n')))
-		stash = ft_add_to_stash(fd, stash, &end);
-	if (!stash)
-		return (free(stash), NULL);
-	nl = ft_strchr(stash, '\n');
+	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
+		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
+	if (!stash[fd])
+		return (free(stash[fd]), NULL);
+	nl = ft_strchr(stash[fd], '\n');
 	if (nl)
 	{
-		line = ft_strndup(stash, nl - stash + 1);
-		stash = ft_clean_stash(&stash);
+		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
+		stash[fd] = ft_clean_stash(&stash[fd]);
 		return (line);
 	}
-	line = stash;
-	stash = NULL;
+	line = stash[fd];
+	stash[fd] = NULL;
 	return (line);
 }
-
-// int	main(void)
-// {
-// 	char	*line;
-
-// 	while ((line = get_next_line(0)) != NULL)
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	return (0);
-// }
