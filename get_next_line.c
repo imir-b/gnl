@@ -6,12 +6,13 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/24 02:58:47 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/24 14:15:07 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <stdio.h>
-// #define BUFFER_SIZE 42
+#include <stdio.h>
+#include <fcntl.h>
+#define BUFFER_SIZE 10
 #include "get_next_line.h"
 
 char	*ft_add_to_stash(int fd, char *stash, int *end)
@@ -91,14 +92,34 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-// int	main(void)
+// int    main(int ac, char *av[])
 // {
-// 	char	*line;
+//     int        fd;
+//     char    *line;
 
-// 	while ((line = get_next_line(0)) != NULL)
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	return (0);
+//     fd = open(av[1], O_RDONLY);
+//     (void) ac;
+//     line = get_next_line(fd);
+//     while (line) {
+//         printf("%s", line);
+//         free(line);
+//         line = get_next_line(fd);
+//     }
+//     free(line);
+// 	close(fd);
+//     return (0);
 // }
+
+int	main(void)
+{
+	char *line;
+	line = get_next_line(0);
+	printf("-%s\n", line);
+	free(line);
+	line = get_next_line(0);
+	printf("-%s\n", line);
+	free(line);
+	line = get_next_line(0);
+	printf("-%s\n", line);
+	free(line);
+}
