@@ -6,13 +6,13 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/24 14:15:07 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/11/29 19:10:14 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <fcntl.h>
-#define BUFFER_SIZE 10
+// #include <stdio.h>
+// #include <fcntl.h>
+// #define BUFFER_SIZE 1
 #include "get_next_line.h"
 
 char	*ft_add_to_stash(int fd, char *stash, int *end)
@@ -23,22 +23,20 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-		return (NULL);
+		return (*end = 1, NULL);
 	bytes = read(fd, buffer, BUFFER_SIZE);
 	if (bytes == 0)
-	{
-		*end = 1;
-		return (free(buffer), stash);
-	}
+		return (*end = 1, free(buffer), stash);
 	if (bytes < 0)
 	{
 		if (stash)
 			free(stash);
-		*end = 1;
-		return (free(buffer), NULL);
+		return (*end = 1, free(buffer), NULL);
 	}
 	buffer[bytes] = '\0';
 	readed = ft_realloc(stash, buffer);
+	if (!readed)
+		return (*end = 1, NULL);
 	return (readed);
 }
 
@@ -68,7 +66,7 @@ char	*ft_clean_stash(char **stash)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash[1024];
 	char		*line;
 	char		*nl;
 	int			end;
@@ -76,50 +74,43 @@ char	*get_next_line(int fd)
 	end = 0;
 	if (fd < 0 || fd >= 1024 || BUFFER_SIZE <= 0)
 		return (NULL);
-	while (!end && (!stash || !ft_strchr(stash, '\n')))
-		stash = ft_add_to_stash(fd, stash, &end);
-	if (!stash)
-		return (free(stash), NULL);
-	nl = ft_strchr(stash, '\n');
+	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
+		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
+	if (!stash[fd])
+		return (free(stash[fd]), NULL);
+	nl = ft_strchr(stash[fd], '\n');
 	if (nl)
 	{
-		line = ft_strndup(stash, nl - stash + 1);
-		stash = ft_clean_stash(&stash);
+		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
+		stash[fd] = ft_clean_stash(&stash[fd]);
 		return (line);
 	}
-	line = stash;
-	stash = NULL;
+	line = stash[fd];
+	stash[fd] = NULL;
 	return (line);
 }
 
-// int    main(int ac, char *av[])
+// int	main(void)
 // {
-//     int        fd;
-//     char    *line;
+// 	int		fd;
+// 	char	*line;
+// 	int		i;
 
-//     fd = open(av[1], O_RDONLY);
-//     (void) ac;
-//     line = get_next_line(fd);
-//     while (line) {
-//         printf("%s", line);
-//         free(line);
-//         line = get_next_line(fd);
-//     }
-//     free(line);
+// 	i = 1;
+// 	fd = open("1char.txt", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		perror("Erreur ouverture");
+// 		return (1);
+// 	}
+// 	printf("--- Début du test avec BUFFER_SIZE = %d ---\n", BUFFER_SIZE);
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("Ligne %d : |%s| (len: %d)\n", i, line, ft_strlen(line));
+// 		free(line);
+// 		i++;
+// 	}
+// 	printf("--- Fin de lecture ---\n");
 // 	close(fd);
-//     return (0);
+// 	return (0);
 // }
-
-int	main(void)
-{
-	char *line;
-	line = get_next_line(0);
-	printf("-%s\n", line);
-	free(line);
-	line = get_next_line(0);
-	printf("-%s\n", line);
-	free(line);
-	line = get_next_line(0);
-	printf("-%s\n", line);
-	free(line);
-}
