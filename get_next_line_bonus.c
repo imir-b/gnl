@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:59 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 23:30:33 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 23:36:18 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,12 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-	{
-		if (stash)
-			free(stash);
-		return (*end = -1, NULL);
-	}
+		return (free(stash), *end = -1, NULL);
 	bytes = read(fd, buffer, BUFFER_SIZE);
+	if (bytes < 0)
+		return (free(stash), free(buffer), *end = -1, NULL);
 	if (bytes == 0)
 		return (*end = 1, free(buffer), stash);
-	if (bytes < 0)
-	{
-		if (stash)
-			free(stash);
-		return (*end = -1, free(buffer), NULL);
-	}
 	buffer[bytes] = '\0';
 	if (ft_strchr(buffer, '\n'))
 		*end = 1;
