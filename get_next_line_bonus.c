@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:59 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 03:10:10 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 23:30:33 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,23 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
+	{
+		if (stash)
+			free(stash);
 		return (*end = -1, NULL);
+	}
 	bytes = read(fd, buffer, BUFFER_SIZE);
 	if (bytes == 0)
 		return (*end = 1, free(buffer), stash);
 	if (bytes < 0)
+	{
+		if (stash)
+			free(stash);
 		return (*end = -1, free(buffer), NULL);
+	}
 	buffer[bytes] = '\0';
+	if (ft_strchr(buffer, '\n'))
+		*end = 1;
 	readed = ft_realloc(stash, buffer);
 	free(buffer);
 	if (!readed)
@@ -48,7 +58,7 @@ char	*ft_clean_stash(char **stash)
 		return (free(*stash), NULL);
 	new_stash = malloc(ft_strlen(nl) + 1);
 	if (!new_stash)
-		return (free (*stash), NULL);
+		return (free(*stash), NULL);
 	i = 0;
 	new_stash[i] = '\0';
 	while (nl[i])
@@ -73,17 +83,18 @@ char	*get_next_line(int fd)
 	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
 		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
 	if (end == -1)
-		return (free(stash[fd]), NULL);
+		return (NULL);
 	if (!stash[fd])
 		return (NULL);
 	nl = ft_strchr(stash[fd], '\n');
 	if (nl)
 	{
 		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
+		if (!line)
+			return (free(stash[fd]), stash[fd] = NULL, NULL);
 		stash[fd] = ft_clean_stash(&stash[fd]);
 		return (line);
 	}
 	line = stash[fd];
-	stash[fd] = NULL;
-	return (line);
+	return (stash[fd] = NULL, line);
 }

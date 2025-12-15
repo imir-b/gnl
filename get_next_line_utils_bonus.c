@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:54 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 03:10:39 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 23:30:46 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,4 @@ char	*ft_realloc(char *s1, char *s2)
 	}
 	dest[i + j] = '\0';
 	return (free(s1), dest);
-}
-
-void	*ft_free_all(char *buffer, char *stash)
-{
-	if (buffer)
-		free(buffer);
-	if (stash)
-		free(stash);
-	return (NULL);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:04:34 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 06:08:18 by vlad             ###   ########.fr       */
+/*   Updated: 2025/12/15 23:01:19 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,4 @@ char	*ft_realloc(char *s1, char *s2)
 	}
 	dest[i + j] = '\0';
 	return (free(s1), dest);
-}
-
-void	*ft_free_all(char *buffer, char *stash)
-{
-	if (buffer)
-		free(buffer);
-	if (stash)
-		free(stash);
-	return (NULL);
 }

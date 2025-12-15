@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 06:35:38 by vlad             ###   ########.fr       */
+/*   Updated: 2025/12/15 23:28:08 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 		return (*end = -1, free(buffer), NULL);
 	}
 	buffer[bytes] = '\0';
+	if (ft_strchr(buffer, '\n'))
+		*end = 1;
 	readed = ft_realloc(stash, buffer);
 	free(buffer);
 	if (!readed)
@@ -58,7 +60,7 @@ char	*ft_clean_stash(char **stash)
 		return (free(*stash), NULL);
 	new_stash = malloc(ft_strlen(nl) + 1);
 	if (!new_stash)
-		return (free (*stash), NULL);
+		return (free(*stash), NULL);
 	i = 0;
 	new_stash[i] = '\0';
 	while (nl[i])
@@ -90,14 +92,13 @@ char	*get_next_line(int fd)
 	if (nl)
 	{
 		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
-		stash[fd] = ft_clean_stash(&stash[fd]);
 		if (!line)
-			free(stash[fd]);
+			return (free(stash[fd]), stash[fd] = NULL, NULL);
+		stash[fd] = ft_clean_stash(&stash[fd]);
 		return (line);
 	}
 	line = stash[fd];
-	stash[fd] = NULL;
-	return (line);
+	return (stash[fd] = NULL, line);
 }
 
 // int	main(void)
@@ -107,7 +108,7 @@ char	*get_next_line(int fd)
 // 	int		i;
 
 // 	i = 1;
-// 	fd = open("multiple_nl.txt", O_RDONLY);
+// 	fd = open("giant_line.txt", O_RDONLY);
 // 	if (fd == -1)
 // 	{
 // 		perror("Erreur ouverture");
