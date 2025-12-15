@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:59 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/29 18:54:56 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 03:10:10 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,19 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-		return (*end = 1, NULL);
+		return (*end = -1, NULL);
 	bytes = read(fd, buffer, BUFFER_SIZE);
 	if (bytes == 0)
 		return (*end = 1, free(buffer), stash);
 	if (bytes < 0)
-	{
-		if (stash)
-			free(stash);
-		return (*end = 1, free(buffer), NULL);
-	}
+		return (*end = -1, free(buffer), NULL);
 	buffer[bytes] = '\0';
 	readed = ft_realloc(stash, buffer);
+	free(buffer);
 	if (!readed)
-		return (*end = 1, NULL);
+		return (*end = -1, NULL);
+	if (bytes < BUFFER_SIZE)
+		return (*end = 1, readed);
 	return (readed);
 }
 
@@ -46,10 +45,10 @@ char	*ft_clean_stash(char **stash)
 	nl = ft_strchr(*stash, '\n');
 	nl++;
 	if (*nl == '\0')
-		return (free (*stash), NULL);
+		return (free(*stash), NULL);
 	new_stash = malloc(ft_strlen(nl) + 1);
 	if (!new_stash)
-		return (free(*stash), NULL);
+		return (free (*stash), NULL);
 	i = 0;
 	new_stash[i] = '\0';
 	while (nl[i])
@@ -58,7 +57,7 @@ char	*ft_clean_stash(char **stash)
 		i++;
 	}
 	new_stash[i] = '\0';
-	return (free (*stash), new_stash);
+	return (free(*stash), new_stash);
 }
 
 char	*get_next_line(int fd)
@@ -73,8 +72,10 @@ char	*get_next_line(int fd)
 		return (NULL);
 	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
 		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
-	if (!stash[fd])
+	if (end == -1)
 		return (free(stash[fd]), NULL);
+	if (!stash[fd])
+		return (NULL);
 	nl = ft_strchr(stash[fd], '\n');
 	if (nl)
 	{

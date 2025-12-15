@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:04:34 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/11/24 02:46:06 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 03:09:13 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ int	ft_strlen(const char *str)
 {
 	int	len;
 
+	if (!str)
+		return (0);
 	len = 0;
 	while (str[len])
 		len++;
@@ -24,6 +26,8 @@ int	ft_strlen(const char *str)
 
 char	*ft_strchr(const char *s, int c)
 {
+	if (!s)
+		return (NULL);
 	while (*s)
 	{
 		if (*s == (char)c)
@@ -65,10 +69,10 @@ char	*ft_realloc(char *s1, char *s2)
 	int		j;
 
 	if (!s1)
-		return (free(s1), s2);
+		return (ft_strndup(s2, ft_strlen(s2)));
 	dest = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!dest)
-		return (free(s1), free(s2), NULL);
+		return (free (s1), NULL);
 	i = ((j = 0));
 	while (s1[i])
 	{
@@ -81,5 +85,14 @@ char	*ft_realloc(char *s1, char *s2)
 		j++;
 	}
 	dest[i + j] = '\0';
-	return (free(s1), free(s2), dest);
+	return (free(s1), dest);
+}
+
+void	*ft_free_all(char *buffer, char *stash)
+{
+	if (buffer)
+		free(buffer);
+	if (stash)
+		free(stash);
+	return (NULL);
 }
