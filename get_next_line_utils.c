@@ -6,13 +6,13 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:04:34 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 23:01:19 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 23:38:25 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_strlen(const char *str)
+int	ft_gnl_strlen(const char *str)
 {
 	int	len;
 
@@ -24,7 +24,7 @@ int	ft_strlen(const char *str)
 	return (len);
 }
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_gnl_strchr(const char *s, int c)
 {
 	if (!s)
 		return (NULL);
@@ -39,7 +39,7 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_strndup(char *src, size_t n)
+char	*ft_gnl_strndup(char *src, size_t n)
 {
 	char	*dest;
 	size_t	i;
@@ -69,8 +69,8 @@ char	*ft_realloc(char *s1, char *s2)
 	int		j;
 
 	if (!s1)
-		return (ft_strndup(s2, ft_strlen(s2)));
-	dest = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+		return (ft_gnl_strndup(s2, ft_gnl_strlen(s2)));
+	dest = malloc(ft_gnl_strlen(s1) + ft_gnl_strlen(s2) + 1);
 	if (!dest)
 		return (free (s1), NULL);
 	i = ((j = 0));
