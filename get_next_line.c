@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 03:09:31 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/15 06:35:38 by vlad             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,20 @@ char	*ft_add_to_stash(int fd, char *stash, int *end)
 
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
+	{
+		if (stash)
+			free(stash);
 		return (*end = -1, NULL);
+	}
 	bytes = read(fd, buffer, BUFFER_SIZE);
 	if (bytes == 0)
 		return (*end = 1, free(buffer), stash);
 	if (bytes < 0)
+	{
+		if (stash)
+			free(stash);
 		return (*end = -1, free(buffer), NULL);
+	}
 	buffer[bytes] = '\0';
 	readed = ft_realloc(stash, buffer);
 	free(buffer);
@@ -75,7 +83,7 @@ char	*get_next_line(int fd)
 	while (!end && (!stash[fd] || !ft_strchr(stash[fd], '\n')))
 		stash[fd] = ft_add_to_stash(fd, stash[fd], &end);
 	if (end == -1)
-		return (free(stash[fd]), NULL);
+		return (NULL);
 	if (!stash[fd])
 		return (NULL);
 	nl = ft_strchr(stash[fd], '\n');
@@ -83,6 +91,8 @@ char	*get_next_line(int fd)
 	{
 		line = ft_strndup(stash[fd], nl - stash[fd] + 1);
 		stash[fd] = ft_clean_stash(&stash[fd]);
+		if (!line)
+			free(stash[fd]);
 		return (line);
 	}
 	line = stash[fd];
@@ -97,7 +107,7 @@ char	*get_next_line(int fd)
 // 	int		i;
 
 // 	i = 1;
-// 	fd = open("1line_no_nl.txt", O_RDONLY);
+// 	fd = open("multiple_nl.txt", O_RDONLY);
 // 	if (fd == -1)
 // 	{
 // 		perror("Erreur ouverture");
