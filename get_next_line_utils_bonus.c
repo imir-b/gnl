@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:54 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 23:39:04 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/16 12:13:51 by vlad             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,13 @@ char	*ft_realloc(char *s1, char *s2)
 	dest = malloc(ft_gnl_strlen(s1) + ft_gnl_strlen(s2) + 1);
 	if (!dest)
 		return (free (s1), NULL);
-	i = ((j = 0));
+	i = 0;
 	while (s1[i])
 	{
 		dest[i] = s1[i];
 		i++;
 	}
+	j = 0;
 	while (s2[j])
 	{
 		dest[i + j] = s2[j];
