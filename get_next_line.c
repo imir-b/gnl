@@ -6,12 +6,10 @@
 /*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 02:05:20 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/16 12:17:04 by vlad             ###   ########.fr       */
+/*   Updated: 2025/12/16 12:18:22 by vlad             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <fcntl.h>
 #include "get_next_line.h"
 
 char	*ft_add_to_stash(int fd, char *stash, int *end)
@@ -91,29 +89,4 @@ char	*get_next_line(int fd)
 	}
 	line = stash[fd];
 	return (stash[fd] = NULL, line);
-}
-
-int	main(void)
-{
-	int		fd;
-	char	*line;
-	int		i;
-
-	i = 1;
-	fd = open("giant_line.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Erreur ouverture");
-		return (1);
-	}
-	printf("--- Début du test avec BUFFER_SIZE = %d ---\n", BUFFER_SIZE);
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("Ligne %d : |%s| (len: %d)\n", i, line, ft_strlen(line));
-		free(line);
-		i++;
-	}
-	printf("--- Fin de lecture ---\n");
-	close(fd);
-	return (0);
 }
