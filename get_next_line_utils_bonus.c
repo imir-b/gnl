@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vlad <vlad@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:54 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/16 12:13:51 by vlad             ###   ########.fr       */
+/*   Updated: 2025/12/16 22:41:37 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-int	ft_gnl_strlen(const char *str)
+size_t	ft_gnl_strlen(const char *str)
 {
-	int	len;
+	size_t	len;
 
 	if (!str)
 		return (0);

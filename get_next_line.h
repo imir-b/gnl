@@ -6,7 +6,7 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/23 18:28:50 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/15 23:39:57 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/16 22:40:30 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-int		ft_gnl_strlen(const char *str);
+size_t	ft_gnl_strlen(const char *str);
 char	*ft_gnl_strchr(const char *s, int c);
 char	*ft_gnl_strndup(char *src, size_t n);
 char	*ft_realloc(char *s1, char *s2);
