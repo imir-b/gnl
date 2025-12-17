@@ -6,12 +6,16 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:56 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/16 22:41:53 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/17 13:16:14 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
+
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 32
+#endif
 
 # include <stdlib.h>
 # include <unistd.h>
