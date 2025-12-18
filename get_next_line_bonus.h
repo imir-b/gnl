@@ -6,19 +6,19 @@
 /*   By: vbleskin <vbleskin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/24 02:53:56 by vbleskin          #+#    #+#             */
-/*   Updated: 2025/12/17 13:16:14 by vbleskin         ###   ########.fr       */
+/*   Updated: 2025/12/18 19:48:09 by vbleskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 32
-#endif
-
 # include <stdlib.h>
 # include <unistd.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 32
+# endif
 
 size_t	ft_gnl_strlen(const char *str);
 char	*ft_gnl_strchr(const char *s, int c);
